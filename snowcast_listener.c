@@ -30,7 +30,40 @@ void *get_in_addr(struct sockaddr *sa)
  @return: nothing to return, always NULL
  @param sockets: the argument list
  */
-void* receive(void* sockets)
+//void* receive(void* sockets)
+//{
+//    int sockfd = (int)sockets;
+//    char buf[BUF_SIZE];
+//    int nbytes;
+//    struct sockaddr_storage their_addr;
+//    socklen_t addr_len;
+//    addr_len = sizeof their_addr;
+//    char ip_addr[INET6_ADDRSTRLEN];
+//    while(1)
+//    {
+//        if ((nbytes = recvfrom(sockfd, buf, BUF_SIZE-1 , 0,
+//                                 (struct sockaddr *)&their_addr, &addr_len)) == -1) {
+//            perror("recvfrom");
+//            exit(1);
+//        }
+//        fprintf(stderr, "listener: got packet from %s\n",
+//               inet_ntop(their_addr.ss_family,
+//                         get_in_addr((struct sockaddr *)&their_addr),
+//                         ip_addr, sizeof ip_addr));
+//        fprintf(stderr, "listener: packet is %d bytes long\n",nbytes);
+//        buf[nbytes] = '\0';
+//        fprintf(stderr, "listener: packet contains \"%s\"\n", buf);
+//        // output to stdout
+//        if(write(STDOUT_FILENO, buf, nbytes) != nbytes)
+//        {
+//            perror("write");
+//            exit(1);
+//        }
+//    }
+//    return NULL;
+//}
+
+void receive (int sockets)
 {
     int sockfd = (int)sockets;
     char buf[BUF_SIZE];
@@ -42,14 +75,14 @@ void* receive(void* sockets)
     while(1)
     {
         if ((nbytes = recvfrom(sockfd, buf, BUF_SIZE-1 , 0,
-                                 (struct sockaddr *)&their_addr, &addr_len)) == -1) {
+                               (struct sockaddr *)&their_addr, &addr_len)) == -1) {
             perror("recvfrom");
             exit(1);
         }
         fprintf(stderr, "listener: got packet from %s\n",
-               inet_ntop(their_addr.ss_family,
-                         get_in_addr((struct sockaddr *)&their_addr),
-                         ip_addr, sizeof ip_addr));
+                inet_ntop(their_addr.ss_family,
+                          get_in_addr((struct sockaddr *)&their_addr),
+                          ip_addr, sizeof ip_addr));
         fprintf(stderr, "listener: packet is %d bytes long\n",nbytes);
         buf[nbytes] = '\0';
         fprintf(stderr, "listener: packet contains \"%s\"\n", buf);
@@ -60,7 +93,6 @@ void* receive(void* sockets)
             exit(1);
         }
     }
-    return NULL;
 }
 
 /*
@@ -128,6 +160,11 @@ int main(int argc, char* argv[])
     {
         fprintf(stderr, "error in binding the socket.\n");
         exit(1);
+    }
+    
+    else
+    {
+        receive(open_connection(udp_port));
     }
 
     for(i = 0; i < NUM_RECEIVER; i++)
