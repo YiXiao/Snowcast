@@ -17,10 +17,14 @@
 
 int main(int argc, char *argv[])
 {
+    int i = 0;
+    while(1){
 	int sockfd;
 	struct addrinfo hints, *servinfo, *p;
 	int rv;
 	int numbytes;
+    FILE *ptr_file;
+    char buf[1000];
     
 	if (argc != 3) {
 		fprintf(stderr,"usage: talker hostname message\n");
@@ -52,7 +56,20 @@ int main(int argc, char *argv[])
 		return 2;
 	}
     
-	if ((numbytes = sendto(sockfd, argv[2], strlen(argv[2]), 0,
+    // read data
+    ptr_file = fopen(argv[2],"r"); // read mode
+    
+    if(!ptr_file)
+    {
+        perror("Error while opening the file.\n");
+        exit(EXIT_FAILURE);
+    }
+    
+    while(fgets(buf,1000, ptr_file)!= NULL ) {
+        printf("%s\n",buf);
+    }
+    
+	if ((numbytes = sendto(sockfd, buf, strlen(buf), 0,
                            p->ai_addr, p->ai_addrlen)) == -1) {
 		perror("talker: sendto");
 		exit(1);
@@ -62,6 +79,11 @@ int main(int argc, char *argv[])
     
 	printf("talker: sent %d bytes to %s\n", numbytes, argv[1]);
 	close(sockfd);
+        
+    // loop counter
+    i++;
+    printf("\n%d\n", i);
+    }
     
 	return 0;
 }
